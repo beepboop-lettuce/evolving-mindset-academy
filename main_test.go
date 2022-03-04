@@ -20,7 +20,7 @@ func TestHandler(t *testing.T) {
 	// sort of like a mini browser, which will accept result of http request we make
 	recorder := httptest.NewRecorder()
 
-	//creat http handler from handler func. "handler" = handler func defined in main.go file (the one being tested)
+	//create http handler from handler func. "handler" = handler func defined in main.go file (the one being tested)
 	hf := http.HandlerFunc(handler)
 
 	//serve http request to recorder. This line actually executes hander being tested
