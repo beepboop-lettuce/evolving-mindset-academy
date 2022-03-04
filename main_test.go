@@ -79,3 +79,32 @@ func TestRouter(t *testing.T) {
 		t.Errorf("Response should be %s, got %s\n", expected, respString)
 	}
 }
+
+func TestRouterForNonExistentRoute(t *testing.T) {
+	r := newRouter()
+	mockServer := httptest.NewServer(r)
+	//similar to above- now making a request to a route we didn't define
+	resp, err := http.Post(mockServer.URL+"/hello", "", nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	//status should be 405- method not allowed
+	if resp.StatusCode != http.StatusMethodNotAllowed {
+		t.Errorf("Status should be 405, got %d", resp.StatusCode)
+	}
+
+	//similar to above- only expecting empty body
+	defer resp.Body.Close()
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	respString := string(b)
+	expected := ""
+
+	if respString != expected {
+		t.Errorf("Response should be %s, got %s\n", expected, respString)
+	}
+}
