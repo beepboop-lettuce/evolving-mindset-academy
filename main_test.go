@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -38,4 +39,43 @@ func TestHandler(t *testing.T) {
 		t.Errorf("handler returned unexpected body: got %v want %v\n", actual, expected)
 	}
 
+}
+
+func TestRouter(t *testing.T) {
+	//instantiate router using constructor func previously defined
+	r := newRouter()
+
+	//create new server using httptest libraries `NewServer` method
+	mockServer := httptest.NewServer(r)
+
+	//mock server runs a server and exposes location in URL attribute
+	//make GET request to "hello" route defined in router
+	resp, err := http.Get(mockServer.URL + "/hello")
+
+	//err handling
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	//want status 200
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Status should be ok, got %d\n", resp.StatusCode)
+	}
+
+	//response body read and converted to string
+	defer resp.Body.Close()
+	//read body into bytes
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	//convert bytes to string
+	respString := string(b)
+	expected := "Hello World!"
+
+	//response should match one defined in handler
+	//if it is "Hello World!" = confirms correct route
+	if respString != expected {
+		t.Errorf("Response should be %s, got %s\n", expected, respString)
+	}
 }
